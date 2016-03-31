@@ -6,13 +6,13 @@ $email = get_option($this->prefix . 'email');
 
     <div class="wrap">
 
-        <h2> <?= __('Soumettre Source : options', 'soumettre_source'); ?></h2>
+        <h2><?= __('Soumettre Source : options', 'soumettre_source'); ?></h2>
 
         <form name="form1" method="post" action="">
 
             <p>
                 Email :
-                <input type="text" name="email" value="<?php echo $email; ?>" size="20">
+                <input type="text" name="email" value="<?= $email; ?>" size="20">
                 Renseignez l'email avec lequel vous avez créé votre compte sur <a target="_blank"
                                                                                   href="https://soumettre.fr/">Soumettre.fr</a>.
                 Si vous n'avez pas encore de compte, vous devrez en créer un.
@@ -20,12 +20,12 @@ $email = get_option($this->prefix . 'email');
 
             <p>
                 API Key :
-                <input type="text" name="api_key" value="<?php echo $api_key; ?>" size="20">
+                <input type="text" name="api_key" value="<?= $api_key; ?>" size="20">
             </p>
 
             <p>
                 API Secret :
-                <input type="text" name="api_secret" value="<?php echo $api_secret; ?>" size="20">
+                <input type="text" name="api_secret" value="<?= $api_secret; ?>" size="20">
             </p>
 
 
@@ -47,12 +47,9 @@ $email = get_option($this->prefix . 'email');
                         <td><span id="site_add_res"></span></td>
                     </tr>
                 </table>
-
-
             <?php } else { ?>
                 <button disabled="disabled">Tester la connexion API</button>
             <?php } ?>
 
         </form>
-
-<?php
+    </div>
