@@ -1,13 +1,13 @@
 <?php
 
 /**
- * @link              https://soumettre.fr
+ * @link              https://soumettre.fr/
  * @since             1.0.0
  * @package           SoumettreSource
  *
  * @wordpress-plugin
  * Plugin Name:       SoumettreSource
- * Plugin URI:        http://soumettre.fr/plugins/wp-soumettresource/
+ * Plugin URI:        https://soumettre.fr/plugin/
  * Description:       Adds your site on Soumettre.fr
  * Version:           0.1
  * Author:            Didier Sampaolo
