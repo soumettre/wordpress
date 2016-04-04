@@ -2,6 +2,7 @@
 $api_key = get_option($this->prefix . 'api_key');
 $api_secret = get_option($this->prefix . 'api_secret');
 $email = get_option($this->prefix . 'email');
+$url_field = get_option($this->prefix . 'url_field');
 ?>
 
     <div class="wrap">
@@ -20,14 +21,18 @@ $email = get_option($this->prefix . 'email');
 
             <p>
                 API Key :
-                <input type="text" name="api_key" value="<?= $api_key; ?>" size="20">
+                <input type="text" name="api_key" value="<?= $api_key; ?>" size="20" />
             </p>
 
             <p>
                 API Secret :
-                <input type="text" name="api_secret" value="<?= $api_secret; ?>" size="20">
+                <input type="text" name="api_secret" value="<?= $api_secret; ?>" size="20" />
             </p>
 
+            <p>
+                Nom de votre custom field "URL" : (si DirectoryPress, c'est "url")
+                <input type="text" name="url_field" value="<?= $url_field; ?>" size="20" />
+            </p>
 
             <p class="submit">
                 <input type="submit" name="soumettre_source_submit" class="button-primary"

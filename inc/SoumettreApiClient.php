@@ -15,7 +15,6 @@ class SoumettreApiClient {
 
     public function test() {
         $res = $this->request('test', null);
-
         echo $res['data'];
         die();
     }
@@ -31,9 +30,9 @@ class SoumettreApiClient {
 
         $params = $this->sign($params);
 
-        $res = wp_remote_post( $endpoint, array('body' => $params));
+        $res = wp_remote_post( $endpoint, array('timeout' => 10,'body' => $params));
 
-        if (isset($res['body'])) {
+        if (is_array($res) && isset($res['body'])) {
             return array('response' => $res, 'data' => $res['body']);
         }
 
@@ -41,7 +40,6 @@ class SoumettreApiClient {
     }
 
     protected function sign($params) {
-
         $time = time();
         $signature = md5($this->api_key.'-'.$this->api_secret.' '.$time);
 
@@ -52,5 +50,4 @@ class SoumettreApiClient {
 
         return $params;
     }
-
 }

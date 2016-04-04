@@ -12,9 +12,4 @@ if (get_option('soum_sour_api_key', true) != $_GET['api_key']) {
     die('wrong_credentials');
 }
 
-$categories = get_categories(array('taxonomy' => 'category'));
-foreach($categories as $category) {
-    $parent = $category->parent != 0 ? $category->parent : '#';
-    $ret[] = array('id' => $category->term_id, 'text' => $category->name, 'parent' => $parent);
-}
-echo json_encode($ret);
+var_dump($_POST);

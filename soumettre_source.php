@@ -40,7 +40,7 @@ class SoumettreSource_Admin
         // check updates
         require 'plugin-updates/plugin-update-checker.php';
         $MyUpdateChecker = PucFactory::buildUpdateChecker(
-            'https://soumettre.fr/plugins/wordpress/directorypress/metadata.json',
+            'https://soumettre.fr/plugins/wordpress/metadata.json',
             __FILE__,
             'codes-promo'
         );
@@ -78,7 +78,7 @@ class SoumettreSource_Admin
 
     protected function save_options()
     {
-        $fields = array('api_key', 'api_secret', 'email');
+        $fields = array('api_key', 'api_secret', 'email', 'url_field');
 
         foreach ($fields as $field) {
             $opt_name = $this->prefix . $field;
@@ -102,7 +102,6 @@ class SoumettreSource_Admin
                     };
                     jQuery.post(ajaxurl, data, function(response) {
                         json = jQuery.parseJSON(response);
-//                        console.log(response);
                         $('#test_api_res').html(json.message);
                     });
                 });
@@ -115,16 +114,8 @@ class SoumettreSource_Admin
                     jQuery.post(ajaxurl, data, function(response) {
                         json = jQuery.parseJSON(response);
                         $('#site_add_res').html(json.message);
-
-//                        if (response == '1') {
-//                            $('#test_api_res').html('OK ! :)');
-//                        } else {
-//                            $('#test_api_res').html('Pas ok :(');
-//                        }
                     });
-
                 });
-
             });
         </script> <?php
     }
