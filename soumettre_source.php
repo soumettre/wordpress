@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @link              https://soumettre.fr/
  * @since             1.0.0
@@ -22,6 +21,8 @@ if (!defined('WPINC')) {
     die;
 }
 
+define('SOUMETTRE_API_URL', get_home_url().'/wp-content/plugins/soumettre_source/api/');
+
 if (is_admin()) {
     add_action('init', 'call_SoumettreSource_Admin');
 }
@@ -42,9 +43,8 @@ class SoumettreSource_Admin
         $MyUpdateChecker = PucFactory::buildUpdateChecker(
             'https://soumettre.fr/plugins/wordpress/metadata.json',
             __FILE__,
-            'codes-promo'
+            'soumettre-source'
         );
-
 
         add_action('admin_menu', array($this, 'admin_menu'));
 
@@ -121,16 +121,17 @@ class SoumettreSource_Admin
     }
 
     public function ajax_test_api() {
-        require_once('inc/SoumettreApiClient.php');
+        require_once('inc/SoumettreWP.php');
 
-        $api = new SoumettreApiClient();
-        echo $api->test();
+        $api = new SoumettreWP();
+        $api->test();
     }
 
     public function ajax_site_add() {
-        require_once('inc/SoumettreApiClient.php');
+        require_once('inc/SoumettreWP.php');
 
-        $api = new SoumettreApiClient();
-        echo $api->site_add();
+        $api = new SoumettreWP();
+        $api->site_add();
     }
+
 }
