@@ -6,9 +6,9 @@
  *
  * @wordpress-plugin
  * Plugin Name:       SoumettreSource
- * Plugin URI:        https://soumettre.fr/plugin/
+ * Plugin URI:        https://soumettre.fr/webmasters
  * Description:       Adds your site on Soumettre.fr
- * Version:           0.1
+ * Version:           0.4
  * Author:            Didier Sampaolo
  * Author URI:        https://didcode.com/
  * License:           GPL-2.0+
@@ -22,6 +22,7 @@ if (!defined('WPINC')) {
 }
 
 define('SOUMETTRE_API_URL', get_home_url().'/wp-content/plugins/soumettre_source/api/');
+
 
 if (is_admin()) {
     add_action('init', 'call_SoumettreSource_Admin');
@@ -121,17 +122,28 @@ class SoumettreSource_Admin
     }
 
     public function ajax_test_api() {
+        require_once('sdk-api-php/src/SoumettreServices.php');
+        require_once('sdk-api-php/src/SoumettreApiClient.php');
+        require_once('sdk-api-php/src/SoumettreApi.php');
+
         require_once('inc/SoumettreWP.php');
 
         $api = new SoumettreWP();
-        $api->test();
+        $res = $api->test();
+
+        echo json_encode($res); die();
     }
 
     public function ajax_site_add() {
+        require_once('sdk-api-php/src/SoumettreServices.php');
+        require_once('sdk-api-php/src/SoumettreApiClient.php');
+        require_once('sdk-api-php/src/SoumettreApi.php');
+
         require_once('inc/SoumettreWP.php');
 
         $api = new SoumettreWP();
-        $api->site_add();
-    }
+        $res = $api->site_add(get_home_url());
 
+        echo json_encode($res); die();
+    }
 }

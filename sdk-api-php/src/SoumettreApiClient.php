@@ -47,9 +47,7 @@ class SoumettreApiClient
      */
     public function test()
     {
-        $res = $this->request('test');
-        echo $res['data'];
-        die();
+        return $this->request('test');
     }
 
     /**
@@ -59,9 +57,7 @@ class SoumettreApiClient
      */
     public function site_add($url)
     {
-        $res = $this->request('site/register', array('site' => $url));
-        echo $res['data'];
-        die();
+        return $this->request('site/register', array('site' => $url));
     }
 
     /**
@@ -71,7 +67,7 @@ class SoumettreApiClient
      * @param array $params
      * @return object Réponse en JSON
      */
-    protected function request($service, $post_params = array())
+    public function request($service, $post_params = array())
     {
         $endpoint = $this->endpoint . $service;
         $post_params = $this->sign($service, $post_params);
@@ -85,7 +81,7 @@ class SoumettreApiClient
         $output = curl_exec($ch);
         curl_close($ch);
 
-        return json_decode($output);
+        return json_encode($output);
     }
 
     /**
@@ -133,17 +129,25 @@ class SoumettreApiClient
         unset($params['api_key']);
         unset($params['time']);
         unset($params['sign']);
+        unset($params['method']);
 
-        $check = md5(sprintf("%s-%s-%d-%s-%s",
+        if (isset($params['title'])) {
+            $params['title'] = stripslashes($params['title']);
+        }
+        if (isset($params['content'])) {
+            $params['content'] = stripslashes($params['content']);
+        }
+        
+        $check = sprintf("%s-%s-%d-%s-%s",
             $this->api_key,
             $this->api_secret,
             $time,
             $endpoint,
             serialize($params)
-        ));
+        );
 
-        if ($signature != $check) {
-            throw new \Exception("Signature invalide");
+        if ($signature != md5($check)) {
+            die("Signature invalide");
         }
 
         return true;
