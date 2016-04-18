@@ -1,14 +1,13 @@
 <?php
 /**
  * @link              https://soumettre.fr/
- * @since             1.0.0
  * @package           SoumettreSource
  *
  * @wordpress-plugin
  * Plugin Name:       SoumettreSource
  * Plugin URI:        https://soumettre.fr/webmasters
  * Description:       Adds your site on Soumettre.fr
- * Version:           0.4
+ * Version:           0.4.8
  * Author:            Didier Sampaolo
  * Author URI:        https://didcode.com/
  * License:           GPL-2.0+
@@ -21,7 +20,7 @@ if (!defined('WPINC')) {
     die;
 }
 
-define('SOUMETTRE_API_URL', get_home_url().'/wp-content/plugins/soumettre_source/api/');
+define('SOUMETTRE_API_URL', get_home_url() . '/wp-content/plugins/soumettre_source/api/');
 
 
 if (is_admin()) {
@@ -41,7 +40,7 @@ class SoumettreSource_Admin
     {
         // check updates
         require 'plugin-updates/plugin-update-checker.php';
-        $MyUpdateChecker = PucFactory::buildUpdateChecker(
+        PucFactory::buildUpdateChecker(
             'https://soumettre.fr/plugins/wordpress/metadata.json',
             __FILE__,
             'soumettre-source'
@@ -50,14 +49,14 @@ class SoumettreSource_Admin
         add_action('admin_menu', array($this, 'admin_menu'));
 
         // ajax
-        add_action('admin_footer', array($this, 'ajax') );
-        add_action( 'wp_ajax_test_api', array($this, 'ajax_test_api' ));
-        add_action( 'wp_ajax_site_add', array($this, 'ajax_site_add' ));
+        add_action('admin_footer', array($this, 'ajax'));
+        add_action('wp_ajax_test_api', array($this, 'ajax_test_api'));
+        add_action('wp_ajax_site_add', array($this, 'ajax_site_add'));
     }
 
     public function admin_menu()
     {
-        add_options_page(__('Soumettre Source', 'soumettre-source-menu'), __('Soumettre Source', 'menu-test'), 'manage_options', 'soumettre-source', array($this, 'admin_page'));
+        add_menu_page(__('Soumettre', 'soumettre-menu'), __('Soumettre', 'soumettre-menu'), 'manage_options', 'soumettre-source', array($this, 'admin_page'));
     }
 
     public function admin_page()
@@ -79,7 +78,7 @@ class SoumettreSource_Admin
 
     protected function save_options()
     {
-        $fields = array('api_key', 'api_secret', 'email', 'url_field');
+        $fields = array('api_key', 'api_secret', 'email', 'url_field', 'author');
 
         foreach ($fields as $field) {
             $opt_name = $this->prefix . $field;
@@ -91,29 +90,32 @@ class SoumettreSource_Admin
         return true;
     }
 
-    public function ajax() { ?>
-        <script type="text/javascript" >
-            jQuery(document).ready(function($) {
+    public function ajax()
+    { ?>
+        <script type="text/javascript">
+            jQuery(document).ready(function ($) {
 
-                jQuery('#soumettre_source_test_api').click(function(event) {
+                jQuery('#soumettre_source_test_api').click(function (event) {
                     event.preventDefault();
 
                     var data = {
                         'action': 'test_api'
                     };
-                    jQuery.post(ajaxurl, data, function(response) {
+                    jQuery.post(ajaxurl, data, function (response) {
                         json = jQuery.parseJSON(response);
+                        console.log(json);
                         $('#test_api_res').html(json.message);
                     });
                 });
 
-                jQuery('#soumettre_source_site_add').click(function(event) {
+                jQuery('#soumettre_source_site_add').click(function (event) {
                     event.preventDefault();
                     var data = {
                         'action': 'site_add'
                     };
-                    jQuery.post(ajaxurl, data, function(response) {
+                    jQuery.post(ajaxurl, data, function (response) {
                         json = jQuery.parseJSON(response);
+
                         $('#site_add_res').html(json.message);
                     });
                 });
@@ -121,7 +123,8 @@ class SoumettreSource_Admin
         </script> <?php
     }
 
-    public function ajax_test_api() {
+    public function ajax_test_api()
+    {
         require_once('sdk-api-php/src/SoumettreServices.php');
         require_once('sdk-api-php/src/SoumettreApiClient.php');
         require_once('sdk-api-php/src/SoumettreApi.php');
@@ -131,10 +134,12 @@ class SoumettreSource_Admin
         $api = new SoumettreWP();
         $res = $api->test();
 
-        echo json_encode($res); die();
+        echo json_encode($res);
+        die();
     }
 
-    public function ajax_site_add() {
+    public function ajax_site_add()
+    {
         require_once('sdk-api-php/src/SoumettreServices.php');
         require_once('sdk-api-php/src/SoumettreApiClient.php');
         require_once('sdk-api-php/src/SoumettreApi.php');
@@ -142,8 +147,9 @@ class SoumettreSource_Admin
         require_once('inc/SoumettreWP.php');
 
         $api = new SoumettreWP();
-        $res = $api->site_add(get_home_url());
+        $res = $api->site_add(get_home_url(), 'WordPress');
 
-        echo json_encode($res); die();
+        echo json_encode($res);
+        die();
     }
 }

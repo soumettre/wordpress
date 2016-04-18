@@ -20,9 +20,21 @@ class SoumettreWP extends \Soumettre\SoumettreApiClient
         $this->check_request();
     }
 
-    protected function check_api() {
-//        $data = get_plugin_data();
+    /**
+     * Charge les credentials depuis la base de données (utilisé par Wordpress)
+     *
+     * @param string $prefix Préfixe SQL pour les options
+     */
+    public function wp_set_credentials($prefix = 'soum_sour_')
+    {
+        $this->email = get_option($prefix . 'email');
+        $this->api_key = get_option($prefix . 'api_key');
+        $this->api_secret = get_option($prefix . 'api_secret');
 
+        $this->author = get_option($prefix . 'author');
+    }
+
+    protected function check_api() {
         $default_headers = array(
             'Name' => 'Plugin Name',
             'PluginURI' => 'Plugin URI',
@@ -33,7 +45,6 @@ class SoumettreWP extends \Soumettre\SoumettreApiClient
             'TextDomain' => 'Text Domain',
             'DomainPath' => 'Domain Path',
             'Network' => 'Network',
-            // Site Wide Only is deprecated in favor of Network.
             '_sitewide' => 'Site Wide Only',
         );
 
@@ -72,9 +83,12 @@ class SoumettreWP extends \Soumettre\SoumettreApiClient
         return json_decode($res['body']);
     }
 
-    public function site_add($url = null)
+    public function site_add($url = null, $cms = null)
     {
-        return $this->request('site_register', array('url' => get_home_url()));
+        $res = $this->request('site_register', array('url' => get_home_url(), 'cms' => 'WordPress'));
+
+        echo json_encode($res);
+        die();
     }
 
     public function check_added($params)
@@ -113,13 +127,22 @@ class SoumettreWP extends \Soumettre\SoumettreApiClient
         echo json_encode($ret);
     }
 
+    public function test()
+    {
+        $res = $this->request('test');
+
+        echo json_encode($res);
+        die();
+    }
+
     public function post($params)
     {
         $post_arr = array(
+            'post_status' => 'publish',
             'post_title' => $params['title'],
             'post_content' => $params['content'],
             'post_category' => array($params['category']),
-            'post_author' => 1,
+            'post_author' => get_option('soum_sour_author'),
             'meta_input' => array(
                 get_option('soum_sour_url_field') => $params['url']
             )
