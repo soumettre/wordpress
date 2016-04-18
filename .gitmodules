@@ -1,0 +1,3 @@
+[submodule "sdk-api-php"]
+	path = sdk-api-php
+	url = git@github.com:soumettre/sdk-api-php.git
