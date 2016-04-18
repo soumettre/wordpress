@@ -1,4 +1,7 @@
 <?php
+require_once(realpath(__DIR__.'/../sdk-api-php/src/SoumettreServices.php'));
+require_once(realpath(__DIR__.'/../sdk-api-php/src/SoumettreApiClient.php'));
+require_once(realpath(__DIR__.'/../sdk-api-php/src/SoumettreApi.php'));
 
 class SoumettreWP extends \Soumettre\SoumettreApiClient
 {

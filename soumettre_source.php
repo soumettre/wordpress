@@ -22,7 +22,6 @@ if (!defined('WPINC')) {
 
 define('SOUMETTRE_API_URL', get_home_url() . '/wp-content/plugins/soumettre_source/api/');
 
-
 if (is_admin()) {
     add_action('init', 'call_SoumettreSource_Admin');
 }
@@ -73,7 +72,7 @@ class SoumettreSource_Admin
             }
         }
 
-        include('inc/admin/options.php');
+        include('inc/admin_options.php');
     }
 
     protected function save_options()
@@ -86,7 +85,6 @@ class SoumettreSource_Admin
 
             update_option($opt_name, $opt_val);
         }
-
         return true;
     }
 
@@ -103,8 +101,12 @@ class SoumettreSource_Admin
                     };
                     jQuery.post(ajaxurl, data, function (response) {
                         json = jQuery.parseJSON(response);
-                        console.log(json);
-                        $('#test_api_res').html(json.message);
+                        if (json.status == 'OK') {
+                            $('#test_api_res').html('<span class="dashicons dashicons-yes"></span>' + json.message);
+                        } else {
+                            $('#test_api_res').html('<span class="dashicons dashicons-no"></span>' + json.message);
+                        }
+
                     });
                 });
 
@@ -115,8 +117,12 @@ class SoumettreSource_Admin
                     };
                     jQuery.post(ajaxurl, data, function (response) {
                         json = jQuery.parseJSON(response);
-
-                        $('#site_add_res').html(json.message);
+                        if (json.status == 'OK') {
+                            $('#site_add_res').html('<span class="dashicons dashicons-yes"></span>' + json.message);
+                        } else {
+                            $('#site_add_res').html('<span class="dashicons dashicons-no"></span>' + json.message)
+                                .append('. <a target="_blank" href="https://soumettre.fr/webmaster/source/' + json.id + '">Brief (sur Soumettre.fr)</a>');
+                        }
                     });
                 });
             });
@@ -125,10 +131,6 @@ class SoumettreSource_Admin
 
     public function ajax_test_api()
     {
-        require_once('sdk-api-php/src/SoumettreServices.php');
-        require_once('sdk-api-php/src/SoumettreApiClient.php');
-        require_once('sdk-api-php/src/SoumettreApi.php');
-
         require_once('inc/SoumettreWP.php');
 
         $api = new SoumettreWP();
@@ -140,10 +142,6 @@ class SoumettreSource_Admin
 
     public function ajax_site_add()
     {
-        require_once('sdk-api-php/src/SoumettreServices.php');
-        require_once('sdk-api-php/src/SoumettreApiClient.php');
-        require_once('sdk-api-php/src/SoumettreApi.php');
-
         require_once('inc/SoumettreWP.php');
 
         $api = new SoumettreWP();
