@@ -7,7 +7,7 @@
  * Plugin Name:       SoumettreSource
  * Plugin URI:        https://soumettre.fr/webmasters
  * Description:       Adds your site on Soumettre.fr
- * Version:           0.5
+ * Version:           0.6
  * Author:            Didier Sampaolo
  * Author URI:        https://didcode.com/
  * License:           GPL-2.0+
@@ -77,7 +77,7 @@ class SoumettreSource_Admin
 
     protected function save_options()
     {
-        $fields = array('api_key', 'api_secret', 'email', 'url_field', 'author');
+        $fields = array('api_key', 'api_secret', 'email', 'url_field', 'author', 'is_partenaire', 'prefer_drafts');
 
         foreach ($fields as $field) {
             $opt_name = $this->prefix . $field;
@@ -120,8 +120,8 @@ class SoumettreSource_Admin
                         if (json.status == 'OK') {
                             $('#site_add_res').html('<span class="dashicons dashicons-yes"></span>' + json.message);
                         } else {
-                            $('#site_add_res').html('<span class="dashicons dashicons-no"></span>' + json.message)
-                                .append('. <a target="_blank" href="https://soumettre.fr/webmaster/source/' + json.id + '">Brief (sur Soumettre.fr)</a>');
+                            $('#site_add_res').html('<span class="dashicons dashicons-yes"></span>' + json.message)
+                                .append('. <a target="_blank" href="https://soumettre.fr/user/website/' + json.id + '">Editer son Brief (sur Soumettre.fr)</a>');
                         }
                     });
                 });
@@ -145,7 +145,7 @@ class SoumettreSource_Admin
         require_once('inc/SoumettreWP.php');
 
         $api = new SoumettreWP();
-        $res = $api->site_add(get_home_url(), 'WordPress');
+        $res = $api->site_add();
 
         echo json_encode($res);
         die();

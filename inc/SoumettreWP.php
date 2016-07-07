@@ -1,7 +1,7 @@
 <?php
-require_once(realpath(__DIR__.'/../sdk-api-php/src/SoumettreServices.php'));
-require_once(realpath(__DIR__.'/../sdk-api-php/src/SoumettreApiClient.php'));
-require_once(realpath(__DIR__.'/../sdk-api-php/src/SoumettreApi.php'));
+require_once(realpath(__DIR__ . '/../sdk-api-php/src/SoumettreServices.php'));
+require_once(realpath(__DIR__ . '/../sdk-api-php/src/SoumettreApiClient.php'));
+require_once(realpath(__DIR__ . '/../sdk-api-php/src/SoumettreApi.php'));
 
 class SoumettreWP extends \Soumettre\SoumettreApiClient
 {
@@ -13,11 +13,15 @@ class SoumettreWP extends \Soumettre\SoumettreApiClient
         'post',
         'delete'
     );
-    protected $endpoint = 'https://soumettre.fr/api/';
 
     function __construct()
     {
         parent::__construct();
+
+        $this->endpoint = 'https://soumettre.fr/api/';
+        if ($_SERVER['SERVER_ADDR'] == '10.0.2.15') {
+            $this->endpoint = 'http://soumettre.app/api/';
+        }
 
         $this->wp_set_credentials();
         $this->check_request();
@@ -33,11 +37,11 @@ class SoumettreWP extends \Soumettre\SoumettreApiClient
         $this->email = get_option($prefix . 'email');
         $this->api_key = get_option($prefix . 'api_key');
         $this->api_secret = get_option($prefix . 'api_secret');
-
         $this->author = get_option($prefix . 'author');
     }
 
-    protected function check_api() {
+    protected function check_api()
+    {
         $default_headers = array(
             'Name' => 'Plugin Name',
             'PluginURI' => 'Plugin URI',
@@ -51,7 +55,7 @@ class SoumettreWP extends \Soumettre\SoumettreApiClient
             '_sitewide' => 'Site Wide Only',
         );
 
-        $plugin_data = get_file_data( '../soumettre_source.php', $default_headers, 'plugin' );
+        $plugin_data = get_file_data('../soumettre_source.php', $default_headers, 'plugin');
 
         echo json_encode(array('status' => 'ok', 'version' => $plugin_data['Version']));
     }
@@ -83,12 +87,23 @@ class SoumettreWP extends \Soumettre\SoumettreApiClient
         $post_params = $this->sign($service, $post_params);
 
         $res = wp_remote_post($endpoint, array('body' => $post_params));
+        if (is_object($res) && get_class($res) == 'WP_Error') {
+            return array('status' => 'error', 'message' => $res->get_error_message());
+        }
+        
         return json_decode($res['body']);
     }
 
     public function site_add($url = null, $cms = null)
     {
-        $res = $this->request('site_register', array('url' => get_home_url(), 'cms' => 'WordPress'));
+        $params = array(
+            'url' => get_home_url(),
+            'cms' => 'WordPress',
+            'is_partenaire' => get_option('soum_sour_is_partenaire'),
+            'prefer_drafts' => get_option('soum_sour_prefer_drafts')
+        );
+
+        $res = $this->request('site_register', $params);
 
         echo json_encode($res);
         die();
@@ -106,6 +121,7 @@ class SoumettreWP extends \Soumettre\SoumettreApiClient
                 )
             )
         );
+
         $meta_query = new WP_Query($args);
         if ($meta_query->have_posts()) {
             while ($meta_query->have_posts()) {
@@ -165,7 +181,8 @@ class SoumettreWP extends \Soumettre\SoumettreApiClient
         }
     }
 
-    protected function set_directorypress_image_fields($image_url, $post_id) {
+    protected function set_directorypress_image_fields($image_url, $post_id)
+    {
         $upload_dir = wp_upload_dir();
         $image_data = file_get_contents($image_url);
         $filename = basename($image_url);
@@ -177,9 +194,9 @@ class SoumettreWP extends \Soumettre\SoumettreApiClient
         file_put_contents($file, $image_data);
 
         if (wp_mkdir_p($upload_dir['path'])) {
-            $image_url = get_home_url(). $upload_dir['path'] . '/' . $filename;
+            $image_url = get_home_url() . $upload_dir['path'] . '/' . $filename;
         } else {
-            $image_url = get_home_url(). $upload_dir['basedir'] . '/' . $filename;
+            $image_url = get_home_url() . $upload_dir['basedir'] . '/' . $filename;
         }
 
         add_post_meta($post_id, 'image', $image_url, true);
