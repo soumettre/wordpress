@@ -90,7 +90,7 @@ class SoumettreWP extends \Soumettre\SoumettreApiClient
         if (is_object($res) && get_class($res) == 'WP_Error') {
             return array('status' => 'error', 'message' => $res->get_error_message());
         }
-        
+
         return json_decode($res['body']);
     }
 
@@ -113,6 +113,7 @@ class SoumettreWP extends \Soumettre\SoumettreApiClient
     {
         $args = array(
             'post__not_in' => get_option("sticky_posts"),
+            'ignore_sticky_posts' => 1,
             'meta_query' => array(
                 array(
                     'key' => get_option('soum_sour_url_field', true),
@@ -156,20 +157,35 @@ class SoumettreWP extends \Soumettre\SoumettreApiClient
 
     public function post($params)
     {
+
+        $meta_input = array();
+
+        $meta_input[get_option('soum_sour_url_field')] = $params['url'];
+        foreach ($params as $p_key => $p_val) {
+            if (strpos($p_key, 'custom_') === 0) {
+                $key = str_replace('custom_', '', $p_key);
+                $meta_input[$key] = strip_tags($p_val);
+            }
+        }
+
+        if (isset($params['draft'])) {
+            $post_status = 'draft';
+        } else {
+            $post_status = 'publish';
+        }
+
         $post_arr = array(
-            'post_status' => 'publish',
+            'post_status' => $post_status,
             'post_title' => $params['title'],
             'post_content' => $params['content'],
             'post_category' => array($params['category']),
             'post_author' => get_option('soum_sour_author'),
-            'meta_input' => array(
-                get_option('soum_sour_url_field') => $params['url']
-            )
+            'meta_input' => $meta_input
         );
 
         $post_ID = wp_insert_post($post_arr);
 
-        if (is_numeric($post_ID)) {
+        if (is_numeric($post_ID) && $post_ID > 0) {
             if (isset($params['image'])) {
                 $this->set_featured_image($params['image'], $post_ID);
                 $this->set_directorypress_image_fields($params['image'], $post_ID);
@@ -177,7 +193,8 @@ class SoumettreWP extends \Soumettre\SoumettreApiClient
 
             echo json_encode(array('status' => 'ok', 'id' => $post_ID, 'url' => get_permalink($post_ID)));
         } else {
-            echo json_encode(array('status' => 'error'));
+
+            echo json_encode(array('status' => 'error', 'post_arr' => $post_arr));
         }
     }
 

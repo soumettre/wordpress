@@ -7,7 +7,7 @@
  * Plugin Name:       SoumettreSource
  * Plugin URI:        https://soumettre.fr/webmasters
  * Description:       Adds your site on Soumettre.fr
- * Version:           0.6
+ * Version:           1.0.0
  * Author:            Didier Sampaolo
  * Author URI:        https://didcode.com/
  * License:           GPL-2.0+

@@ -5,8 +5,12 @@
 
 ## Getting started ##
 1. Crééz un compte client gratuit sur [https://soumettre.fr/](https://soumettre.fr/).
-1. Récupérez vos [identifiants API](https://soumettre.fr/user/api)
+1. Récupérez vos [identifiants API](https://soumettre.fr/user/profile)
 1. Allez sur la page d'option pour configurer le plugin
+
+## Pré-requis
++ PHP 5.4 ou supérieur
++ Wordpress 4.4 ou supérieur (si vous utilisez des custom fields particuliers)
 
 ## Accès depuis notre serveur ##
 
